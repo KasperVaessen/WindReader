@@ -1,0 +1,8 @@
+cx-Freeze==6.15.12
+cx-Logging==3.1.0
+lief==0.13.2
+Phidget22==1.17.20231004
+PySide6==6.6.1
+PySide6-Addons==6.6.1
+PySide6-Essentials==6.6.1
+shiboken6==6.6.1
