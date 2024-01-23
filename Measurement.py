@@ -34,19 +34,6 @@ class MeasureWindTunnel:
         self.diff_pressure_channel.setDeviceSerialNumber(149027)
         self.diff_pressure_channel.setChannel(2)
 
-        # Set data meassure rate
-        self.lift_channel.setDataInterval(32)
-        self.drag_channel.setDataInterval(32)
-
-        # Set bridge gain (128 means very accurate, but low range, but the range is big enough for our application)
-        self.lift_channel.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
-        self.drag_channel.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
-
-        # Set sensor type
-        self.atmospheric_pressure_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1115)
-        self.temperature_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1124)
-        self.diff_pressure_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1136)
-
         # Set function to execute when phidgets are attached
         self.lift_channel.setOnAttachHandler(self.__on_attach_handler)
         self.drag_channel.setOnAttachHandler(self.__on_attach_handler)
@@ -109,7 +96,7 @@ class MeasureWindTunnel:
             # dynamic pressure: q = 1/2 * rho * v^2
             v = math.sqrt(2 * diff_pressure / airDensity)
         else:
-            v = -9999
+            v = 0
         return [lift, drag, atmospheric_pressure, temperature, diff_pressure, v]
     
     def close(self):
@@ -126,15 +113,22 @@ class MeasureWindTunnel:
         if serial == 141133:
             if port == 0:
                 self.attached[0] = True
+                phidget.setDataInterval(32)
+                phidget.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
             elif port == 1:
                 self.attached[1] = True
+                phidget.setDataInterval(32)
+                phidget.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
         elif serial == 149027:
             if port == 0:
                 self.attached[2] = True
+                phidget.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1115)
             elif port == 1:
                 self.attached[3] = True
+                phidget.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1124)
             elif port == 2:
                 self.attached[4] = True
+                phidget.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1136)
         if all(self.attached):
             self.callback_attached()
     
@@ -167,7 +161,6 @@ class MeasureMock:
         
     
     def zero_data(self, proper=True, timesteps=5, interval=0.2):
-        self.callback_attached()
         for _ in range(timesteps):
             self.offset_lift += -0.2
             self.offset_drag += 0.05

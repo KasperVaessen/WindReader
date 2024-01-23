@@ -338,7 +338,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setSortingEnabled(False)
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Devices unattached", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Phidgets not connected", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Lift", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"N", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Drag", None))

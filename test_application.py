@@ -3,14 +3,35 @@ import os
 import sys
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from Measurement import MeasureMock
+from PySide6.QtGui import *
+from Measurement import MeasureMock, MeasureWindTunnel
 
 from mainwindow import Ui_MainWindow
+
+class overlay(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, Qt.transparent)
+
+        self.setPalette(palette)
+
+    def paintEvent(self, event):
+        painter = QPainter()
+        painter.begin(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.fillRect(event.rect(), QBrush(QColor(0, 0, 0, 127)))
+        font = painter.font()
+        font.setPointSize(20)
+        painter.setFont(font)
+        painter.drawText(event.rect(), Qt.AlignCenter, "Phidgets not connected")
+        painter.setPen(QPen(Qt.NoPen))
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
+        self.meassurement = MeasureWindTunnel(self.phidget_attached, self.phidget_detached)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.tableWidget.removeRow(0)
@@ -20,16 +41,26 @@ class MainWindow(QMainWindow):
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
 
+        self.overlay = overlay(self)
+        self.overlay.showMaximized()
+        self.overlay.setVisible(True)
     
+    def resizeEvent(self, event):
+        self.overlay.resize(event.size())
+        event.accept()
+
+
     def start_measure(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_measure)
         self.timer.start(200)
     
     def phidget_attached(self):
+        self.overlay.setVisible(False)
         self.ui.label_5.setText("Phidgets connected")
     
     def phidget_detached(self):
+        self.overlay.setVisible(True)
         self.ui.label_5.setText("Phidgets disconnected")
     
     def stop_measure(self):
