@@ -54,7 +54,6 @@ class MeasureWindTunnel:
         self.gain_drag = 1000
         self.gain_diff_pressure = 1000
 
-
     def zero_data(self, proper=True, timesteps=5, interval=0.2):
         for _ in range(timesteps):
             self.offset_lift += self.lift_channel.getVoltageRatio()
@@ -70,8 +69,8 @@ class MeasureWindTunnel:
             self.gain_drag = 11148.3112741824 # calculated by control panel
 
     def get_values(self):
-        lift = (self.lift_channel.getVoltageRatio()-self.offset_lift)*self.gain_lift
-        drag = (self.drag_channel.getVoltageRatio()-self.offset_drag)*self.gain_drag
+        lift = (self.lift_channel.getVoltageRatio()-self.offset_lift)*self.gain_lift*9.81
+        drag = (self.drag_channel.getVoltageRatio()-self.offset_drag)*self.gain_drag*9.81
         atmospheric_pressure = self.atmospheric_pressure_channel.getSensorValue()
         temperature = self.temperature_channel.getSensorValue()+273.15
         diff_pressure = (self.diff_pressure_channel.getSensorValue() - self.offset_diff_pressure)*self.gain_diff_pressure
@@ -94,18 +93,35 @@ class MeasureWindTunnel:
         self.temperature_channel.close()
         self.diff_pressure_channel.close()
 
+    # def set_on_attach_handler(self, handler):
+    #     self.lift_channel.setOnAttachHandler(handler)
+    #     self.drag_channel.setOnAttachHandler(handler)
+    #     self.atmospheric_pressure_channel.setOnAttachHandler(handler)
+    #     self.temperature_channel.setOnAttachHandler(handler)
+    #     self.diff_pressure_channel.setOnAttachHandler(handler)
+
 
 class MeasureMock:
     def __init__(self):
-        pass
-    def zero_data(self):
-        pass
+        self.offset_lift = 0
+        self.offset_drag = 0
+        self.offset_diff_pressure = 0
+    def zero_data(self, proper=True, timesteps=5, interval=0.2):
+        for _ in range(timesteps):
+            self.offset_lift += -0.2
+            self.offset_drag += 0.05
+            self.offset_diff_pressure += 200
+            time.sleep(interval)
+        
+        self.offset_lift /= 5
+        self.offset_drag /= 5
+        self.offset_diff_pressure /= 5
     def get_values(self):
-        lift = np.random.normal(-0.2, 0.1)
-        drag = np.random.normal(0.05, 0.01)
+        lift = (np.random.normal(-0.2, 0.1)-self.offset_lift)*9.81
+        drag = (np.random.normal(0.05, 0.01)-self.offset_drag)*9.81
         atmospheric_pressure = 100.85
         temperature = 294.9
-        diff_pressure = np.random.normal(200, 20)
+        diff_pressure = np.random.normal(200, 20)-self.offset_diff_pressure
 
         c_algGasConst = 8.31
         c_molMassa = 0.0288
