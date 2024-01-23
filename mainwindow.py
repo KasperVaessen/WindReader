@@ -24,7 +24,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(823, 518)
+        MainWindow.resize(949, 518)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setLayoutDirection(Qt.LeftToRight)
@@ -45,8 +45,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.horizontalLayout_9, 5, 0, 1, 1)
 
         self.tableWidget = QTableWidget(self.centralwidget)
-        if (self.tableWidget.columnCount() < 6):
-            self.tableWidget.setColumnCount(6)
+        if (self.tableWidget.columnCount() < 7):
+            self.tableWidget.setColumnCount(7)
         __qtablewidgetitem = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -59,16 +59,23 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(4, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(5, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(6, __qtablewidgetitem6)
         if (self.tableWidget.rowCount() < 1):
             self.tableWidget.setRowCount(1)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.tableWidget.setItem(0, 0, __qtablewidgetitem7)
         self.tableWidget.setObjectName(u"tableWidget")
         self.tableWidget.setProperty("showDropIndicator", True)
         self.tableWidget.setDragDropOverwriteMode(True)
-        self.tableWidget.setSortingEnabled(True)
+        self.tableWidget.setSortingEnabled(False)
 
         self.gridLayout.addWidget(self.tableWidget, 1, 0, 1, 1)
+
+        self.label_5 = QLabel(self.centralwidget)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout.addWidget(self.label_5, 6, 0, 1, 1)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -234,6 +241,31 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addLayout(self.speed_box)
 
+        self.angle_box = QVBoxLayout()
+        self.angle_box.setObjectName(u"angle_box")
+        self.label_16 = QLabel(self.centralwidget)
+        self.label_16.setObjectName(u"label_16")
+
+        self.angle_box.addWidget(self.label_16)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.angle_entry = QLineEdit(self.centralwidget)
+        self.angle_entry.setObjectName(u"angle_entry")
+
+        self.horizontalLayout_10.addWidget(self.angle_entry)
+
+        self.label_17 = QLabel(self.centralwidget)
+        self.label_17.setObjectName(u"label_17")
+
+        self.horizontalLayout_10.addWidget(self.label_17)
+
+
+        self.angle_box.addLayout(self.horizontalLayout_10)
+
+
+        self.horizontalLayout.addLayout(self.angle_box)
+
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.start_measure_button = QPushButton(self.centralwidget)
@@ -270,7 +302,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 823, 22))
+        self.menubar.setGeometry(QRect(0, 0, 949, 22))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -299,11 +331,14 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Difference Pressure (Pa)", None));
         ___qtablewidgetitem5 = self.tableWidget.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wind Speed (m/s)", None));
+        ___qtablewidgetitem6 = self.tableWidget.horizontalHeaderItem(6)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Angle (deg)", None));
 
         __sortingEnabled = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Devices unattached", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Lift", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"N", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Drag", None))
@@ -316,6 +351,8 @@ class Ui_MainWindow(object):
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Pa", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Wind Speed", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"m/s", None))
+        self.label_16.setText(QCoreApplication.translate("MainWindow", u"Angle", None))
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"deg", None))
         self.start_measure_button.setText(QCoreApplication.translate("MainWindow", u"Start Measuring", None))
         self.stop_measure_button.setText(QCoreApplication.translate("MainWindow", u"Stop Measuring", None))
         self.tare_button.setText(QCoreApplication.translate("MainWindow", u"Tare", None))

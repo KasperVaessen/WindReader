@@ -5,7 +5,7 @@ from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageRatioInput import *
 
 class MeasureWindTunnel:
-    def __init__(self):
+    def __init__(self, callback_attached=lambda: None, callback_detached=lambda: None):
     # Initialize channels
         self.lift_channel = VoltageRatioInput()
         self.drag_channel = VoltageRatioInput()
@@ -13,26 +13,26 @@ class MeasureWindTunnel:
         self.temperature_channel = VoltageRatioInput()
         self.diff_pressure_channel = VoltageRatioInput()
 
+        # List to keep track of which channels are attached
+        self.attached = [False, False, False, False, False]
+        self.callback_attached = callback_attached
+        self.callback_detached = callback_detached
+
         #Connect channels to corresponding ports on correct phidget
         self.lift_channel.setDeviceSerialNumber(141133)
         self.lift_channel.setChannel(0)
-        self.lift_channel.openWaitForAttachment(5000)
 
         self.drag_channel.setDeviceSerialNumber(141133)
         self.drag_channel.setChannel(1)
-        self.drag_channel.openWaitForAttachment(5000)
 
         self.atmospheric_pressure_channel.setDeviceSerialNumber(149027)
         self.atmospheric_pressure_channel.setChannel(0)
-        self.atmospheric_pressure_channel.openWaitForAttachment(5000)
 
         self.temperature_channel.setDeviceSerialNumber(149027)
         self.temperature_channel.setChannel(1)
-        self.temperature_channel.openWaitForAttachment(5000)
 
         self.diff_pressure_channel.setDeviceSerialNumber(149027)
         self.diff_pressure_channel.setChannel(2)
-        self.diff_pressure_channel.openWaitForAttachment(5000)
 
         # Set data meassure rate
         self.lift_channel.setDataInterval(32)
@@ -46,6 +46,26 @@ class MeasureWindTunnel:
         self.atmospheric_pressure_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1115)
         self.temperature_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1124)
         self.diff_pressure_channel.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1136)
+
+        # Set function to execute when phidgets are attached
+        self.lift_channel.setOnAttachHandler(self.__on_attach_handler)
+        self.drag_channel.setOnAttachHandler(self.__on_attach_handler)
+        self.atmospheric_pressure_channel.setOnAttachHandler(self.__on_attach_handler)
+        self.temperature_channel.setOnAttachHandler(self.__on_attach_handler)
+        self.diff_pressure_channel.setOnAttachHandler(self.__on_attach_handler)
+
+        # Set function to execute when phidgets are detached
+        self.lift_channel.setOnDetachHandler(self.__on_detach_handler)
+        self.drag_channel.setOnDetachHandler(self.__on_detach_handler)
+        self.atmospheric_pressure_channel.setOnDetachHandler(self.__on_detach_handler)
+        self.temperature_channel.setOnDetachHandler(self.__on_detach_handler)
+        self.diff_pressure_channel.setOnDetachHandler(self.__on_detach_handler)
+
+        self.lift_channel.open()
+        self.drag_channel.open()
+        self.atmospheric_pressure_channel.open()
+        self.temperature_channel.open()
+        self.diff_pressure_channel.open()
 
         self.offset_lift = 0
         self.offset_drag = 0
@@ -67,6 +87,12 @@ class MeasureWindTunnel:
         if proper:
             self.gain_lift = 9907.67275888859 # calculated by control panel
             self.gain_drag = 11148.3112741824 # calculated by control panel
+    
+    def set_callback_attached(self, callback):
+        self.callback_attached = callback
+    
+    def set_callback_detached(self, callback):
+        self.callback_detached = callback
 
     def get_values(self):
         lift = (self.lift_channel.getVoltageRatio()-self.offset_lift)*self.gain_lift*9.81
@@ -93,20 +119,55 @@ class MeasureWindTunnel:
         self.temperature_channel.close()
         self.diff_pressure_channel.close()
 
-    # def set_on_attach_handler(self, handler):
-    #     self.lift_channel.setOnAttachHandler(handler)
-    #     self.drag_channel.setOnAttachHandler(handler)
-    #     self.atmospheric_pressure_channel.setOnAttachHandler(handler)
-    #     self.temperature_channel.setOnAttachHandler(handler)
-    #     self.diff_pressure_channel.setOnAttachHandler(handler)
+    # tessten of dit werkt zo met phidget ipv self
+    def __on_attach_handler(self, phidget):
+        serial = phidget.getDeviceSerialNumber()
+        port = phidget.getChannel()
+        if serial == 141133:
+            if port == 0:
+                self.attached[0] = True
+            elif port == 1:
+                self.attached[1] = True
+        elif serial == 149027:
+            if port == 0:
+                self.attached[2] = True
+            elif port == 1:
+                self.attached[3] = True
+            elif port == 2:
+                self.attached[4] = True
+        if all(self.attached):
+            self.callback_attached()
+    
+    def __on_detach_handler(self, phidget):
+        serial = phidget.getDeviceSerialNumber()
+        port = phidget.getChannel()
+        if serial == 141133:
+            if port == 0:
+                self.attached[0] = False
+            elif port == 1:
+                self.attached[1] = False
+        elif serial == 149027:
+            if port == 0:
+                self.attached[2] = False
+            elif port == 1:
+                self.attached[3] = False
+            elif port == 2:
+                self.attached[4] = False
+        if sum(self.attached) == 4:
+            self.callback_detached()
 
 
 class MeasureMock:
-    def __init__(self):
+    def __init__(self, callback_attached=lambda: None, callback_detached=lambda: None):
         self.offset_lift = 0
         self.offset_drag = 0
         self.offset_diff_pressure = 0
+        self.callback_attached = callback_attached
+        self.callback_detached = callback_detached
+        
+    
     def zero_data(self, proper=True, timesteps=5, interval=0.2):
+        self.callback_attached()
         for _ in range(timesteps):
             self.offset_lift += -0.2
             self.offset_drag += 0.05
@@ -116,6 +177,13 @@ class MeasureMock:
         self.offset_lift /= 5
         self.offset_drag /= 5
         self.offset_diff_pressure /= 5
+
+    def set_callback_attached(self, callback):
+        self.callback_attached = callback
+    
+    def set_callback_detached(self, callback):
+        self.callback_detached = callback
+    
     def get_values(self):
         lift = (np.random.normal(-0.2, 0.1)-self.offset_lift)*9.81
         drag = (np.random.normal(0.05, 0.01)-self.offset_drag)*9.81

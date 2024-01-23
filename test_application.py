@@ -10,7 +10,7 @@ from mainwindow import Ui_MainWindow
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.meassurement = MeasureMock()
+        self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.tableWidget.removeRow(0)
@@ -19,11 +19,18 @@ class MainWindow(QMainWindow):
         self.ui.tare_button.clicked.connect(self.meassurement.zero_data)
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
+
     
     def start_measure(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_measure)
         self.timer.start(200)
+    
+    def phidget_attached(self):
+        self.ui.label_5.setText("Phidgets connected")
+    
+    def phidget_detached(self):
+        self.ui.label_5.setText("Phidgets disconnected")
     
     def stop_measure(self):
         self.timer.stop()
@@ -45,6 +52,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 3, QTableWidgetItem(self.ui.temp_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 4, QTableWidgetItem(self.ui.diff_pres_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 5, QTableWidgetItem(self.ui.speed_entry.text()))
+        self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
     
     def save_to_csv(self):
         path, ok = QFileDialog.getSaveFileName(
