@@ -5,8 +5,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from Measurement import MeasureMock, MeasureWindTunnel
-
-from mainwindow import Ui_MainWindow
+from priv.mainwindow import Ui_MainWindow
 
 class overlay(QWidget):
     def __init__(self, parent=None):

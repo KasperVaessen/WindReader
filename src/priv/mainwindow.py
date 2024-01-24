@@ -314,7 +314,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"WindMeasure", None))
         self.save_csv_button.setText(QCoreApplication.translate("MainWindow", u"Save to CSV", None))
 #if QT_CONFIG(shortcut)
         self.save_csv_button.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+S", None))

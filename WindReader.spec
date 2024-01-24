@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['test_application.py'],
+    ['src\\main_application.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -31,7 +31,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['ui\\reshot-icon-wind-N26SPX7HZM.ico'],
+    icon=['resources\\icon.ico'],
 )
 coll = COLLECT(
     exe,
