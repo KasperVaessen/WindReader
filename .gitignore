@@ -5,3 +5,5 @@ dist/
 *.xlsx
 *.xls
 *.csv
+*.exe
+*.spec
