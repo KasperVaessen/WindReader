@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+import pyqtgraph as pg
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -30,19 +31,21 @@ class overlay(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.meassurement = MeasureWindTunnel(self.phidget_attached, self.phidget_detached)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.overlay = overlay(self)
+        self.overlay.showMaximized()
+        self.overlay.setVisible(True)
+
+        self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
+
         self.ui.tableWidget.removeRow(0)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
         self.ui.stop_measure_button.clicked.connect(self.stop_measure)
         self.ui.tare_button.clicked.connect(self.meassurement.zero_data)
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
-
-        self.overlay = overlay(self)
-        self.overlay.showMaximized()
-        self.overlay.setVisible(True)
     
     def resizeEvent(self, event):
         self.overlay.resize(event.size())
@@ -83,6 +86,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 4, QTableWidgetItem(self.ui.diff_pres_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 5, QTableWidgetItem(self.ui.speed_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
+        self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 7, QTableWidgetItem(self.ui.surface_entry.text()))
     
     def save_to_csv(self):
         path, ok = QFileDialog.getSaveFileName(

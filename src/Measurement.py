@@ -158,6 +158,7 @@ class MeasureMock:
         self.offset_diff_pressure = 0
         self.callback_attached = callback_attached
         self.callback_detached = callback_detached
+        self.callback_attached()
         
     
     def zero_data(self, proper=True, timesteps=5, interval=0.2):
@@ -192,7 +193,7 @@ class MeasureMock:
             # dynamic pressure: q = 1/2 * rho * v^2
             v = math.sqrt(2 * diff_pressure / airDensity)
         else:
-            v = -9999
+            v = 0
         return [lift, drag, atmospheric_pressure, temperature, diff_pressure, v]
     def close(self):
         pass
