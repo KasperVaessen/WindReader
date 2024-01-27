@@ -46,6 +46,53 @@ class MainWindow(QMainWindow):
         self.ui.tare_button.clicked.connect(self.meassurement.zero_data)
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
+
+        self.recent_lift = []
+        self.recent_drag = []
+        self.recent_diff_pressure = []
+        self.recent_wind_speed = []
+
+        self.init_plots()
+        
+    def init_plots(self):
+        for plot in [self.ui.plot_1, self.ui.plot_2, self.ui.plot_3, self.ui.plot_4]:
+            plot.setBackground('w')
+            plot.showGrid(x=True, y=True)
+            plot.setLabel('bottom', 'Time (s)')
+        
+        self.ui.plot_1.setTitle("Lift")
+        self.ui.plot_2.setTitle("Drag")
+        self.ui.plot_3.setTitle("Diff. Pressure")
+        self.ui.plot_4.setTitle("Wind Speed")
+
+        self.ui.plot_1.setLabel('left', 'Lift (N)')
+        self.ui.plot_2.setLabel('left', 'Drag (N)')
+        self.ui.plot_3.setLabel('left', 'Diff. Pressure (Pa)')
+        self.ui.plot_4.setLabel('left', 'Wind Speed (m/s)')
+
+        self.line1 = self.ui.plot_1.plot(self.recent_lift, pen=pg.mkPen('b', width=1))
+        self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('b', width=1))
+        self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('b', width=1))
+        self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('b', width=1))
+    
+    def updatePlots(self, values):
+        if len(self.recent_lift) > 100:
+            self.recent_lift.pop(0)
+            self.recent_drag.pop(0)
+            self.recent_diff_pressure.pop(0)
+            self.recent_wind_speed.pop(0)
+        else:
+            self.x = [x*0.2 for x in range(-(len(self.recent_lift)),1)]
+        self.recent_lift.append(values[0])
+        self.recent_drag.append(values[1])
+        self.recent_diff_pressure.append(values[4])
+        self.recent_wind_speed.append(values[5])
+
+        self.line1.setData(self.x, self.recent_lift)
+        self.line2.setData(self.x, self.recent_drag)
+        self.line3.setData(self.x, self.recent_diff_pressure)
+        self.line4.setData(self.x, self.recent_wind_speed)
+    
     
     def resizeEvent(self, event):
         self.overlay.resize(event.size())
@@ -76,6 +123,8 @@ class MainWindow(QMainWindow):
         self.ui.temp_entry.setText(format(values[3], '.1f'))
         self.ui.diff_pres_entry.setText(format(values[4], '.1f'))
         self.ui.speed_entry.setText(format(values[5], '.1f'))
+
+        self.updatePlots(values)
     
     def save_measurement(self):
         self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())

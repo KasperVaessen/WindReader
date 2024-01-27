@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>949</width>
-    <height>518</height>
+    <width>1078</width>
+    <height>621</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="measure_tab">
        <attribute name="title">
@@ -39,10 +39,13 @@
          <layout class="QVBoxLayout" name="interaction">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1,1,1,1,1,1,1">
+            <property name="spacing">
+             <number>9</number>
+            </property>
             <item>
              <layout class="QVBoxLayout" name="Lift_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label">
@@ -77,7 +80,7 @@
             <item>
              <layout class="QVBoxLayout" name="Drag_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_3">
@@ -112,7 +115,7 @@
             <item>
              <layout class="QVBoxLayout" name="Pressure_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_7">
@@ -147,7 +150,7 @@
             <item>
              <layout class="QVBoxLayout" name="temp_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_11">
@@ -182,7 +185,7 @@
             <item>
              <layout class="QVBoxLayout" name="diff_press_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_13">
@@ -217,7 +220,7 @@
             <item>
              <layout class="QVBoxLayout" name="speed_box" stretch="0,0">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_9">
@@ -252,7 +255,7 @@
             <item>
              <layout class="QVBoxLayout" name="angle_box">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_16">
@@ -290,7 +293,7 @@
             <item>
              <layout class="QVBoxLayout" name="Area_box">
               <property name="spacing">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QLabel" name="label_6">
@@ -460,7 +463,23 @@
        <attribute name="title">
         <string>Graphs</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2"/>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="horizontalSpacing">
+         <number>12</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="PlotWidget" name="plot_3"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="PlotWidget" name="plot_1"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="PlotWidget" name="plot_2"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="PlotWidget" name="plot_4"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -471,13 +490,38 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>949</width>
+     <width>1078</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="actionSettings"/>
+   </widget>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

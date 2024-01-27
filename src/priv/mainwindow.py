@@ -11,21 +11,28 @@
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QHeaderView,
-    QLabel, QLineEdit, QMainWindow, QMenuBar,
-    QPushButton, QSizePolicy, QSpacerItem, QStatusBar,
-    QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,
-    QWidget)
+    QLabel, QLineEdit, QMainWindow, QMenu,
+    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
+    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
+    QVBoxLayout, QWidget)
+
+from pyqtgraph import PlotWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(949, 518)
+        MainWindow.resize(1078, 621)
+        self.actionSave = QAction(MainWindow)
+        self.actionSave.setObjectName(u"actionSave")
+        self.actionSettings = QAction(MainWindow)
+        self.actionSettings.setObjectName(u"actionSettings")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setLayoutDirection(Qt.LeftToRight)
@@ -45,9 +52,10 @@ class Ui_MainWindow(object):
         self.interaction = QVBoxLayout()
         self.interaction.setObjectName(u"interaction")
         self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setSpacing(9)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.Lift_box = QVBoxLayout()
-        self.Lift_box.setSpacing(2)
+        self.Lift_box.setSpacing(0)
         self.Lift_box.setObjectName(u"Lift_box")
         self.label = QLabel(self.measure_tab)
         self.label.setObjectName(u"label")
@@ -75,7 +83,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.Lift_box)
 
         self.Drag_box = QVBoxLayout()
-        self.Drag_box.setSpacing(2)
+        self.Drag_box.setSpacing(0)
         self.Drag_box.setObjectName(u"Drag_box")
         self.label_3 = QLabel(self.measure_tab)
         self.label_3.setObjectName(u"label_3")
@@ -103,7 +111,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.Drag_box)
 
         self.Pressure_box = QVBoxLayout()
-        self.Pressure_box.setSpacing(2)
+        self.Pressure_box.setSpacing(0)
         self.Pressure_box.setObjectName(u"Pressure_box")
         self.label_7 = QLabel(self.measure_tab)
         self.label_7.setObjectName(u"label_7")
@@ -131,7 +139,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.Pressure_box)
 
         self.temp_box = QVBoxLayout()
-        self.temp_box.setSpacing(2)
+        self.temp_box.setSpacing(0)
         self.temp_box.setObjectName(u"temp_box")
         self.label_11 = QLabel(self.measure_tab)
         self.label_11.setObjectName(u"label_11")
@@ -159,7 +167,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.temp_box)
 
         self.diff_press_box = QVBoxLayout()
-        self.diff_press_box.setSpacing(2)
+        self.diff_press_box.setSpacing(0)
         self.diff_press_box.setObjectName(u"diff_press_box")
         self.label_13 = QLabel(self.measure_tab)
         self.label_13.setObjectName(u"label_13")
@@ -187,7 +195,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.diff_press_box)
 
         self.speed_box = QVBoxLayout()
-        self.speed_box.setSpacing(2)
+        self.speed_box.setSpacing(0)
         self.speed_box.setObjectName(u"speed_box")
         self.label_9 = QLabel(self.measure_tab)
         self.label_9.setObjectName(u"label_9")
@@ -215,7 +223,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.speed_box)
 
         self.angle_box = QVBoxLayout()
-        self.angle_box.setSpacing(2)
+        self.angle_box.setSpacing(0)
         self.angle_box.setObjectName(u"angle_box")
         self.label_16 = QLabel(self.measure_tab)
         self.label_16.setObjectName(u"label_16")
@@ -242,7 +250,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.angle_box)
 
         self.Area_box = QVBoxLayout()
-        self.Area_box.setSpacing(2)
+        self.Area_box.setSpacing(0)
         self.Area_box.setObjectName(u"Area_box")
         self.label_6 = QLabel(self.measure_tab)
         self.label_6.setObjectName(u"label_6")
@@ -364,6 +372,27 @@ class Ui_MainWindow(object):
         self.graph_tab.setObjectName(u"graph_tab")
         self.gridLayout_2 = QGridLayout(self.graph_tab)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setHorizontalSpacing(12)
+        self.plot_3 = PlotWidget(self.graph_tab)
+        self.plot_3.setObjectName(u"plot_3")
+
+        self.gridLayout_2.addWidget(self.plot_3, 1, 0, 1, 1)
+
+        self.plot_1 = PlotWidget(self.graph_tab)
+        self.plot_1.setObjectName(u"plot_1")
+
+        self.gridLayout_2.addWidget(self.plot_1, 0, 0, 1, 1)
+
+        self.plot_2 = PlotWidget(self.graph_tab)
+        self.plot_2.setObjectName(u"plot_2")
+
+        self.gridLayout_2.addWidget(self.plot_2, 0, 1, 1, 1)
+
+        self.plot_4 = PlotWidget(self.graph_tab)
+        self.plot_4.setObjectName(u"plot_4")
+
+        self.gridLayout_2.addWidget(self.plot_4, 1, 1, 1, 1)
+
         self.tabWidget.addTab(self.graph_tab, "")
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
@@ -371,15 +400,21 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 949, 22))
+        self.menubar.setGeometry(QRect(0, 0, 1078, 22))
+        self.menuOptions = QMenu(self.menubar)
+        self.menuOptions.setObjectName(u"menuOptions")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.menubar.addAction(self.menuOptions.menuAction())
+        self.menuOptions.addAction(self.actionSave)
+        self.menuOptions.addAction(self.actionSettings)
+
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -387,6 +422,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"WindMeasure", None))
+        self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))
+        self.actionSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Phidgets not connected", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Lift", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"N", None))
@@ -439,5 +476,6 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(shortcut)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.measure_tab), QCoreApplication.translate("MainWindow", u"Measure", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.graph_tab), QCoreApplication.translate("MainWindow", u"Graphs", None))
+        self.menuOptions.setTitle(QCoreApplication.translate("MainWindow", u"Options", None))
     # retranslateUi
 
