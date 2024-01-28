@@ -43,7 +43,9 @@ class MainWindow(QMainWindow):
 
         self.ui.tableWidget.removeRow(0)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
+        self.ui.start_measure_button2.clicked.connect(self.start_measure)
         self.ui.stop_measure_button.clicked.connect(self.stop_measure)
+        self.ui.stop_measure_button2.clicked.connect(self.stop_measure)
         self.ui.tare_button.clicked.connect(self.meassurement.zero_data)
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
@@ -123,6 +125,10 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_measure)
         self.timer.start(200)
+        self.ui.stop_measure_button.setEnabled(True)
+        self.ui.stop_measure_button2.setEnabled(True)
+        self.ui.start_measure_button.setEnabled(False)
+        self.ui.start_measure_button2.setEnabled(False)
     
     def phidget_attached(self):
         self.overlay.setVisible(False)
@@ -134,6 +140,10 @@ class MainWindow(QMainWindow):
     
     def stop_measure(self):
         self.timer.stop()
+        self.ui.stop_measure_button.setEnabled(False)
+        self.ui.stop_measure_button2.setEnabled(False)
+        self.ui.start_measure_button.setEnabled(True)
+        self.ui.start_measure_button2.setEnabled(True)
     
     def update_measure(self):
         values = self.meassurement.get_values()

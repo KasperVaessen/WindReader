@@ -342,6 +342,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="stop_measure_button">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>Stop Measuring</string>
                 </property>
@@ -467,17 +470,51 @@
         <property name="horizontalSpacing">
          <number>12</number>
         </property>
-        <item row="1" column="0">
-         <widget class="PlotWidget" name="plot_3"/>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="start_measure_button2">
+            <property name="text">
+             <string>Start Measuring</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="stop_measure_button2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Stop Measuring</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="PlotWidget" name="plot_1"/>
         </item>
-        <item row="0" column="1">
-         <widget class="PlotWidget" name="plot_2"/>
+        <item row="2" column="1">
+         <widget class="PlotWidget" name="plot_4"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="PlotWidget" name="plot_3"/>
         </item>
         <item row="1" column="1">
-         <widget class="PlotWidget" name="plot_4"/>
+         <widget class="PlotWidget" name="plot_2"/>
         </item>
        </layout>
       </widget>

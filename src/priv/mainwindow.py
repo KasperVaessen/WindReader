@@ -286,6 +286,7 @@ class Ui_MainWindow(object):
 
         self.stop_measure_button = QPushButton(self.measure_tab)
         self.stop_measure_button.setObjectName(u"stop_measure_button")
+        self.stop_measure_button.setEnabled(False)
 
         self.verticalLayout.addWidget(self.stop_measure_button)
 
@@ -373,25 +374,45 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QGridLayout(self.graph_tab)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setHorizontalSpacing(12)
-        self.plot_3 = PlotWidget(self.graph_tab)
-        self.plot_3.setObjectName(u"plot_3")
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_2.addWidget(self.plot_3, 1, 0, 1, 1)
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_2)
+
+        self.start_measure_button2 = QPushButton(self.graph_tab)
+        self.start_measure_button2.setObjectName(u"start_measure_button2")
+
+        self.horizontalLayout_11.addWidget(self.start_measure_button2)
+
+        self.stop_measure_button2 = QPushButton(self.graph_tab)
+        self.stop_measure_button2.setObjectName(u"stop_measure_button2")
+        self.stop_measure_button2.setEnabled(False)
+
+        self.horizontalLayout_11.addWidget(self.stop_measure_button2)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_11, 0, 1, 1, 1)
 
         self.plot_1 = PlotWidget(self.graph_tab)
         self.plot_1.setObjectName(u"plot_1")
 
-        self.gridLayout_2.addWidget(self.plot_1, 0, 0, 1, 1)
-
-        self.plot_2 = PlotWidget(self.graph_tab)
-        self.plot_2.setObjectName(u"plot_2")
-
-        self.gridLayout_2.addWidget(self.plot_2, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.plot_1, 1, 0, 1, 1)
 
         self.plot_4 = PlotWidget(self.graph_tab)
         self.plot_4.setObjectName(u"plot_4")
 
-        self.gridLayout_2.addWidget(self.plot_4, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.plot_4, 2, 1, 1, 1)
+
+        self.plot_3 = PlotWidget(self.graph_tab)
+        self.plot_3.setObjectName(u"plot_3")
+
+        self.gridLayout_2.addWidget(self.plot_3, 2, 0, 1, 1)
+
+        self.plot_2 = PlotWidget(self.graph_tab)
+        self.plot_2.setObjectName(u"plot_2")
+
+        self.gridLayout_2.addWidget(self.plot_2, 1, 1, 1, 1)
 
         self.tabWidget.addTab(self.graph_tab, "")
         self.save_graph_tab = QWidget()
@@ -430,7 +451,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -491,6 +512,8 @@ class Ui_MainWindow(object):
         self.save_csv_button.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+S", None))
 #endif // QT_CONFIG(shortcut)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.measure_tab), QCoreApplication.translate("MainWindow", u"Measure", None))
+        self.start_measure_button2.setText(QCoreApplication.translate("MainWindow", u"Start Measuring", None))
+        self.stop_measure_button2.setText(QCoreApplication.translate("MainWindow", u"Stop Measuring", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.graph_tab), QCoreApplication.translate("MainWindow", u"Live Graphs", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.save_graph_tab), QCoreApplication.translate("MainWindow", u"Data Graphs", None))
         self.menuOptions.setTitle(QCoreApplication.translate("MainWindow", u"Options", None))
