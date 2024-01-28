@@ -394,6 +394,22 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.plot_4, 1, 1, 1, 1)
 
         self.tabWidget.addTab(self.graph_tab, "")
+        self.save_graph_tab = QWidget()
+        self.save_graph_tab.setObjectName(u"save_graph_tab")
+        self.gridLayout_3 = QGridLayout(self.save_graph_tab)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_3.setHorizontalSpacing(12)
+        self.plot_5 = PlotWidget(self.save_graph_tab)
+        self.plot_5.setObjectName(u"plot_5")
+
+        self.gridLayout_3.addWidget(self.plot_5, 0, 0, 1, 1)
+
+        self.plot_6 = PlotWidget(self.save_graph_tab)
+        self.plot_6.setObjectName(u"plot_6")
+
+        self.gridLayout_3.addWidget(self.plot_6, 0, 1, 1, 1)
+
+        self.tabWidget.addTab(self.save_graph_tab, "")
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
@@ -414,7 +430,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -475,7 +491,8 @@ class Ui_MainWindow(object):
         self.save_csv_button.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+S", None))
 #endif // QT_CONFIG(shortcut)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.measure_tab), QCoreApplication.translate("MainWindow", u"Measure", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.graph_tab), QCoreApplication.translate("MainWindow", u"Graphs", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.graph_tab), QCoreApplication.translate("MainWindow", u"Live Graphs", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.save_graph_tab), QCoreApplication.translate("MainWindow", u"Data Graphs", None))
         self.menuOptions.setTitle(QCoreApplication.translate("MainWindow", u"Options", None))
     # retranslateUi
 

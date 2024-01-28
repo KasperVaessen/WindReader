@@ -7,6 +7,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from Measurement import MeasureMock, MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
+import bisect
 
 class overlay(QWidget):
     def __init__(self, parent=None):
@@ -51,6 +52,9 @@ class MainWindow(QMainWindow):
         self.recent_drag = []
         self.recent_diff_pressure = []
         self.recent_wind_speed = []
+        self.cl_data = []
+        self.cd_data = []
+        self.alpha_data = []
 
         self.init_plots()
         
@@ -59,39 +63,55 @@ class MainWindow(QMainWindow):
             plot.setBackground('w')
             plot.showGrid(x=True, y=True)
             plot.setLabel('bottom', 'Time (s)')
+        for plot in [self.ui.plot_5, self.ui.plot_6]:
+            plot.setBackground('w')
+            plot.showGrid(x=True, y=True)
+            plot.setLabel('bottom', 'CL')
         
         self.ui.plot_1.setTitle("Lift")
         self.ui.plot_2.setTitle("Drag")
         self.ui.plot_3.setTitle("Diff. Pressure")
         self.ui.plot_4.setTitle("Wind Speed")
+        self.ui.plot_5.setTitle("Lift Coefficient vs alpha")
+        self.ui.plot_6.setTitle("Lift Coefficient vs Drag Coefficient")
 
         self.ui.plot_1.setLabel('left', 'Lift (N)')
         self.ui.plot_2.setLabel('left', 'Drag (N)')
         self.ui.plot_3.setLabel('left', 'Diff. Pressure (Pa)')
         self.ui.plot_4.setLabel('left', 'Wind Speed (m/s)')
+        self.ui.plot_5.setLabel('left', 'alpha (deg)')
+        self.ui.plot_6.setLabel('left', 'CD')
 
         self.line1 = self.ui.plot_1.plot(self.recent_lift, pen=pg.mkPen('b', width=1))
         self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('b', width=1))
         self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('b', width=1))
         self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('b', width=1))
+        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen('b', width=1))
+        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen('b', width=1))
     
     def updatePlots(self, values):
+        # If data is too long, remove the oldest data point
         if len(self.recent_lift) > 100:
             self.recent_lift.pop(0)
             self.recent_drag.pop(0)
             self.recent_diff_pressure.pop(0)
             self.recent_wind_speed.pop(0)
         else:
+            #update x axis, while data is not its max length
             self.x = [x*0.2 for x in range(-(len(self.recent_lift)),1)]
+        
+        # Add new data point
         self.recent_lift.append(values[0])
         self.recent_drag.append(values[1])
         self.recent_diff_pressure.append(values[4])
         self.recent_wind_speed.append(values[5])
 
-        self.line1.setData(self.x, self.recent_lift)
-        self.line2.setData(self.x, self.recent_drag)
-        self.line3.setData(self.x, self.recent_diff_pressure)
-        self.line4.setData(self.x, self.recent_wind_speed)
+        # Only update the graph if the user has the graph tab open
+        if self.ui.graph_tab.isVisible():
+            self.line1.setData(self.x, self.recent_lift)
+            self.line2.setData(self.x, self.recent_drag)
+            self.line3.setData(self.x, self.recent_diff_pressure)
+            self.line4.setData(self.x, self.recent_wind_speed)
     
     
     def resizeEvent(self, event):
@@ -136,6 +156,17 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 5, QTableWidgetItem(self.ui.speed_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 7, QTableWidgetItem(self.ui.surface_entry.text()))
+
+        #TODO: dit checken, is namelijk door copilot gedaan
+        cl = float(self.ui.lift_entry.text())/(0.5*1.225*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
+        cd = float(self.ui.drag_entry.text())/(0.5*1.225*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
+        ind = bisect.bisect(self.cl_data, cl)
+        self.cl_data.insert(ind, cl)
+        self.cd_data.insert(ind, cd)
+        self.alpha_data.insert(ind, float(self.ui.angle_entry.text()))
+        self.line5.setData(self.cl_data, self.alpha_data)
+        self.line6.setData(self.cl_data, self.cd_data)
+
     
     def save_to_csv(self):
         path, ok = QFileDialog.getSaveFileName(
