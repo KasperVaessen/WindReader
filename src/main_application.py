@@ -7,7 +7,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from Measurement import MeasureMock, MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
-import bisect
+from priv.settingswindow import Ui_Settings
 
 class overlay(QWidget):
     def __init__(self, parent=None):
@@ -29,6 +29,13 @@ class overlay(QWidget):
         painter.drawText(event.rect(), Qt.AlignCenter, "Phidgets not connected")
         painter.setPen(QPen(Qt.NoPen))
 
+class Settings(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui = Ui_Settings()
+        self.ui.setupUi(self)
+
+        
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -57,6 +64,17 @@ class MainWindow(QMainWindow):
         self.cl_data = []
         self.cd_data = []
         self.alpha_data = []
+
+        reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+        angle_validator = QRegularExpressionValidator(reg_ex, self.ui.angle_entry)
+        area_validator = QRegularExpressionValidator(reg_ex, self.ui.surface_entry)
+        self.ui.angle_entry.setValidator(angle_validator)
+        self.ui.surface_entry.setValidator(area_validator)
+
+        self.settings = QSettings("PWS_Lab", "Wind Tunnel")
+
+        self.ui.actionSave.triggered.connect(self.save_to_csv)
+        self.ui.actionSettings.triggered.connect(lambda : self.show_settings(self.settings))
 
         self.init_plots()
         
@@ -88,8 +106,8 @@ class MainWindow(QMainWindow):
         self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('b', width=1))
         self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('b', width=1))
         self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('b', width=1))
-        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen('b', width=1))
-        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen('b', width=1))
+        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen(None), symbol ='x')
+        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen(None), symbol ='x')
     
     def updatePlots(self, values):
         # If data is too long, remove the oldest data point
@@ -167,15 +185,19 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 7, QTableWidgetItem(self.ui.surface_entry.text()))
 
-        #TODO: dit checken, is namelijk door copilot gedaan
-        cl = float(self.ui.lift_entry.text())/(0.5*1.225*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
-        cd = float(self.ui.drag_entry.text())/(0.5*1.225*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
-        ind = bisect.bisect(self.cl_data, cl)
-        self.cl_data.insert(ind, cl)
-        self.cd_data.insert(ind, cd)
-        self.alpha_data.insert(ind, float(self.ui.angle_entry.text()))
-        self.line5.setData(self.cl_data, self.alpha_data)
-        self.line6.setData(self.cl_data, self.cd_data)
+        if float(self.ui.speed_entry.text()) > 0 and float(self.ui.surface_entry.text()) > 0:
+            #TODO: dit checken, is namelijk door copilot gedaan
+            c_algGasConst = 8.31
+            c_molMassa = 0.0288
+            # Ideal gas law: pV = nRT
+            airDensity = c_molMassa * float(self.ui.pressure_entry.text()) * 1000 / (c_algGasConst * float(self.ui.temp_entry.text()))
+            cl = float(self.ui.lift_entry.text())/(0.5*airDensity*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
+            cd = float(self.ui.drag_entry.text())/(0.5*airDensity*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
+            self.cl_data.append(cl)
+            self.cd_data.append(cd)
+            self.alpha_data.append(float(self.ui.angle_entry.text()))
+            self.line5.setData(self.cl_data, self.alpha_data)
+            self.line6.setData(self.cl_data, self.cd_data)
 
     
     def save_to_csv(self):
@@ -189,6 +211,11 @@ class MainWindow(QMainWindow):
                 writer.writerow(header)
                 for row in range(self.ui.tableWidget.rowCount()):
                     writer.writerow(self.ui.tableWidget.item(row, column).text() for column in columns)
+
+    def show_settings(self, settings):
+        self.settings_window = Settings()
+        self.settings_window.show()
+
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

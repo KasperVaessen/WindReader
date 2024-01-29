@@ -68,9 +68,9 @@ class MeasureWindTunnel:
             self.offset_diff_pressure += self.diff_pressure_channel.getSensorValue()
             time.sleep(interval)
         
-        self.offset_lift /= 5
-        self.offset_drag /= 5
-        self.offset_diff_pressure /= 5
+        self.offset_lift /= timesteps
+        self.offset_drag /= timesteps
+        self.offset_diff_pressure /= timesteps
         if proper:
             self.gain_lift = 9907.67275888859 # calculated by control panel
             self.gain_drag = 11148.3112741824 # calculated by control panel
