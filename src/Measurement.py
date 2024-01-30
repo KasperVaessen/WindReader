@@ -57,11 +57,11 @@ class MeasureWindTunnel:
         self.offset_lift = 0
         self.offset_drag = 0
         self.offset_diff_pressure = 0
-        self.gain_lift = 1000
-        self.gain_drag = 1000
+        self.gain_lift = 9907.67275888859 # calculated by control panel
+        self.gain_drag = 11148.3112741824 # calculated by control panel
         self.gain_diff_pressure = 1000
 
-    def zero_data(self, proper=True, timesteps=5, interval=0.2):
+    def zero_data(self, timesteps=5, interval=0.2, use_default=True, gain_lift=1000, gain_drag=1000):
         for _ in range(timesteps):
             self.offset_lift += self.lift_channel.getVoltageRatio()
             self.offset_drag += self.drag_channel.getVoltageRatio()
@@ -71,9 +71,9 @@ class MeasureWindTunnel:
         self.offset_lift /= timesteps
         self.offset_drag /= timesteps
         self.offset_diff_pressure /= timesteps
-        if proper:
-            self.gain_lift = 9907.67275888859 # calculated by control panel
-            self.gain_drag = 11148.3112741824 # calculated by control panel
+        if not use_default:
+            self.gain_lift = gain_lift
+            self.gain_drag = gain_drag
     
     def set_callback_attached(self, callback):
         self.callback_attached = callback
@@ -161,16 +161,16 @@ class MeasureMock:
         self.callback_attached()
         
     
-    def zero_data(self, proper=True, timesteps=5, interval=0.2):
+    def zero_data(self, timesteps=5, interval=0.2, use_default=True, gain_lift=1000, gain_drag=1000):
         for _ in range(timesteps):
             self.offset_lift += -0.2
             self.offset_drag += 0.05
             self.offset_diff_pressure += 200
             time.sleep(interval)
         
-        self.offset_lift /= 5
-        self.offset_drag /= 5
-        self.offset_diff_pressure /= 5
+        self.offset_lift /= timesteps
+        self.offset_drag /= timesteps
+        self.offset_diff_pressure /= timesteps
 
     def set_callback_attached(self, callback):
         self.callback_attached = callback

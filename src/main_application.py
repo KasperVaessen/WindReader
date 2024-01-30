@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.overlay.showMaximized()
         self.overlay.setVisible(True)
 
+        self.settings = QSettings("PWS_Lab", "Wind Tunnel")
         self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
 
         self.ui.tableWidget.removeRow(0)
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         self.ui.start_measure_button2.clicked.connect(self.start_measure)
         self.ui.stop_measure_button.clicked.connect(self.stop_measure)
         self.ui.stop_measure_button2.clicked.connect(self.stop_measure)
-        self.ui.tare_button.clicked.connect(self.meassurement.zero_data)
+        self.ui.tare_button.clicked.connect(self.tare_measure)
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
 
@@ -71,13 +72,19 @@ class MainWindow(QMainWindow):
         self.ui.angle_entry.setValidator(angle_validator)
         self.ui.surface_entry.setValidator(area_validator)
 
-        self.settings = QSettings("PWS_Lab", "Wind Tunnel")
-
         self.ui.actionSave.triggered.connect(self.save_to_csv)
         self.ui.actionSettings.triggered.connect(lambda : self.show_settings(self.settings))
 
         self.init_plots()
         
+    def tare_measure(self):
+        amount_samples = self.settings.value("amount_samples_calibration", 5)
+        sample_rate = self.settings.value("sample_rate_calibration", 5)
+        default_calibration = self.settings.value("default_calibration", "true") == "true"
+        drag_gain = float(self.settings.value("drag gain", "9907.67"))
+        lift_gain = float(self.settings.value("lift gain", "11148.31"))
+        self.meassurement.zero_data(amount_samples, 1/sample_rate, default_calibration, drag_gain, lift_gain)
+
     def init_plots(self):
         for plot in [self.ui.plot_1, self.ui.plot_2, self.ui.plot_3, self.ui.plot_4]:
             plot.setBackground('w')
@@ -118,7 +125,7 @@ class MainWindow(QMainWindow):
             self.recent_wind_speed.pop(0)
         else:
             #update x axis, while data is not its max length
-            self.x = [x*0.2 for x in range(-(len(self.recent_lift)),1)]
+            self.x = [x/self.settings.value("sample_rate_measure", 5) for x in range(-(len(self.recent_lift)),1)]
         
         # Add new data point
         self.recent_lift.append(values[0])
@@ -142,11 +149,17 @@ class MainWindow(QMainWindow):
     def start_measure(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_measure)
-        self.timer.start(200)
+        self.timer.start(1000/self.settings.value("sample_rate_measure", 5))
         self.ui.stop_measure_button.setEnabled(True)
         self.ui.stop_measure_button2.setEnabled(True)
         self.ui.start_measure_button.setEnabled(False)
         self.ui.start_measure_button2.setEnabled(False)
+
+        #reset data for plots
+        self.recent_diff_pressure = []
+        self.recent_drag = []
+        self.recent_lift = []
+        self.recent_wind_speed = []
     
     def phidget_attached(self):
         self.overlay.setVisible(False)
@@ -213,8 +226,39 @@ class MainWindow(QMainWindow):
                     writer.writerow(self.ui.tableWidget.item(row, column).text() for column in columns)
 
     def show_settings(self, settings):
+        #Set fields to current setting values
         self.settings_window = Settings()
+        self.settings_window.ui.sample_rate_calibration.setValue(settings.value("sample_rate_calibration", 5))
+        self.settings_window.ui.amount_samples_calibration.setValue(settings.value("amount_samples_calibration", 5))
+        self.settings_window.ui.default_calibration.setChecked(settings.value("default_calibration", "true") == "true")
+        self.settings_window.ui.setting_drag_gain.setText(settings.value("drag gain", "9907.67"))
+        self.settings_window.ui.setting_lift_gain.setText(settings.value("lift gain", "11148.31"))
+        self.settings_window.ui.sample_rate_measure.setValue(settings.value("sample_rate_measure", 5))
+        self.settings_window.ui.default_calibration.stateChanged.connect(self.change_gain_enabled)
+
+        #validate input
+        reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
+        drag_validator = QRegularExpressionValidator(reg_ex, self.settings_window.ui.setting_drag_gain)
+        lift_validator = QRegularExpressionValidator(reg_ex, self.settings_window.ui.setting_lift_gain)
+        self.settings_window.ui.setting_drag_gain.setValidator(drag_validator)
+        self.settings_window.ui.setting_lift_gain.setValidator(lift_validator)
+
         self.settings_window.show()
+        self.settings_window.ui.save_settings.clicked.connect(lambda : self.save_settings(settings))
+
+    def change_gain_enabled(self):
+        self.settings_window.ui.setting_drag_gain.setEnabled(not self.settings_window.ui.default_calibration.isChecked())
+        self.settings_window.ui.setting_lift_gain.setEnabled(not self.settings_window.ui.default_calibration.isChecked())
+
+    def save_settings(self, settings):
+        settings.setValue("sample_rate_calibration", self.settings_window.ui.sample_rate_calibration.value())
+        settings.setValue("amount_samples_calibration", self.settings_window.ui.amount_samples_calibration.value())
+        settings.setValue("default_calibration", self.settings_window.ui.default_calibration.isChecked())
+        settings.setValue("drag gain", self.settings_window.ui.setting_drag_gain.text())
+        settings.setValue("lift gain", self.settings_window.ui.setting_lift_gain.text())
+        settings.setValue("sample_rate_measure", self.settings_window.ui.sample_rate_measure.value())
+
+        self.settings_window.close()
 
     
 if __name__ == "__main__":
