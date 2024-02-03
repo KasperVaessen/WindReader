@@ -8,6 +8,7 @@ from PySide6.QtGui import *
 from Measurement import MeasureMock, MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
 from priv.settingswindow import Ui_Settings
+from qt_material import apply_stylesheet
 
 
 # A class to create a semi-transparent overlay to show when the phidgets are not connected
@@ -48,6 +49,9 @@ class MainWindow(QMainWindow):
         self.overlay = overlay(self)
         self.overlay.showMaximized()
         self.overlay.setVisible(True)
+
+        # Set the table to resize the columns to the content
+        self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.settings = QSettings("PWS_Lab", "Wind Tunnel")
         self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
@@ -92,12 +96,14 @@ class MainWindow(QMainWindow):
     # Creates empty plots
     def init_plots(self):
         for plot in [self.ui.plot_1, self.ui.plot_2, self.ui.plot_3, self.ui.plot_4]:
-            plot.setBackground('w')
+            plot.setBackground(None)
             plot.showGrid(x=True, y=True)
+            plot.setStyleSheet("border: 0px")
             plot.setLabel('bottom', 'Time (s)')
         for plot in [self.ui.plot_5, self.ui.plot_6]:
-            plot.setBackground('w')
+            plot.setBackground(None)
             plot.showGrid(x=True, y=True)
+            plot.setStyleSheet("border: 0px")
             plot.setLabel('bottom', 'CL')
         
         self.ui.plot_1.setTitle("Lift")
@@ -114,12 +120,13 @@ class MainWindow(QMainWindow):
         self.ui.plot_5.setLabel('left', 'alpha (deg)')
         self.ui.plot_6.setLabel('left', 'CD')
 
-        self.line1 = self.ui.plot_1.plot(self.recent_lift, pen=pg.mkPen('b', width=1))
-        self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('b', width=1))
-        self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('b', width=1))
-        self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('b', width=1))
-        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen(None), symbol ='x')
-        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen(None), symbol ='x')
+        #set pen color to color primary color of style, which is saved as an environment variable.
+        self.line1 = self.ui.plot_1.plot(self.recent_lift, pen=pg.mkPen('r', width=1))
+        self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('r', width=1))
+        self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('r', width=1))
+        self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('r', width=1))
+        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
+        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
     
     # Updates the plots with new data
     def updatePlots(self, values):
@@ -279,6 +286,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = MainWindow()
+    apply_stylesheet(app, theme='light_red.xml', invert_secondary=True)
+
     window.show()
 
     sys.exit(app.exec())

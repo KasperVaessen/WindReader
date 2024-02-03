@@ -16,11 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QHeaderView,
-    QLabel, QLineEdit, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
-    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QGridLayout, QHBoxLayout,
+    QHeaderView, QLabel, QLineEdit, QMainWindow,
+    QMenu, QMenuBar, QPushButton, QSizePolicy,
+    QSpacerItem, QStatusBar, QTabWidget, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 from pyqtgraph import PlotWidget
 
@@ -346,11 +346,22 @@ class Ui_MainWindow(object):
         if (self.tableWidget.rowCount() < 1):
             self.tableWidget.setRowCount(1)
         __qtablewidgetitem8 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 0, __qtablewidgetitem8)
+        self.tableWidget.setItem(0, 1, __qtablewidgetitem8)
         self.tableWidget.setObjectName(u"tableWidget")
+        self.tableWidget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.tableWidget.setProperty("showDropIndicator", True)
         self.tableWidget.setDragDropOverwriteMode(True)
         self.tableWidget.setSortingEnabled(False)
+        self.tableWidget.setWordWrap(True)
+        self.tableWidget.setCornerButtonEnabled(True)
+        self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
+        self.tableWidget.horizontalHeader().setHighlightSections(True)
+        self.tableWidget.horizontalHeader().setProperty("showSortIndicator", False)
+        self.tableWidget.horizontalHeader().setStretchLastSection(False)
+        self.tableWidget.verticalHeader().setCascadingSectionResizes(False)
+        self.tableWidget.verticalHeader().setHighlightSections(True)
+        self.tableWidget.verticalHeader().setProperty("showSortIndicator", False)
+        self.tableWidget.verticalHeader().setStretchLastSection(False)
 
         self.verticalLayout_4.addWidget(self.tableWidget)
 
@@ -487,21 +498,21 @@ class Ui_MainWindow(object):
         self.tare_button.setText(QCoreApplication.translate("MainWindow", u"Tare", None))
         self.save_measurement.setText(QCoreApplication.translate("MainWindow", u"Save Current", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Drag (N)", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Lift (N)", None));
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Lift (N)", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Drag (N)", None));
         ___qtablewidgetitem2 = self.tableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Pressure (kPa)", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Press (kPa)", None));
         ___qtablewidgetitem3 = self.tableWidget.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Temperature (K)", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Temp (K)", None));
         ___qtablewidgetitem4 = self.tableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Difference Pressure (Pa)", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Diff (Pa)", None));
         ___qtablewidgetitem5 = self.tableWidget.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wind Speed (m/s)", None));
         ___qtablewidgetitem6 = self.tableWidget.horizontalHeaderItem(6)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Angle (deg)", None));
         ___qtablewidgetitem7 = self.tableWidget.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Surface Area (m2)", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Area (m2)", None));
 
         __sortingEnabled = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
