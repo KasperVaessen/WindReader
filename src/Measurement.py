@@ -61,6 +61,7 @@ class MeasureWindTunnel:
         self.gain_drag = 11148.3112741824 # calculated by control panel
         self.gain_diff_pressure = 1000
 
+    # Zero data by taking the average of the first timesteps, and set the gain
     def zero_data(self, timesteps=5, interval=0.2, use_default=True, gain_lift=1000, gain_drag=1000):
         for _ in range(timesteps):
             self.offset_lift += self.lift_channel.getVoltageRatio()
@@ -99,6 +100,7 @@ class MeasureWindTunnel:
             v = 0
         return [lift, drag, atmospheric_pressure, temperature, diff_pressure, v]
     
+    # Close all channels, to allow other programs to use them
     def close(self):
         self.lift_channel.close()
         self.drag_channel.close()
@@ -106,7 +108,7 @@ class MeasureWindTunnel:
         self.temperature_channel.close()
         self.diff_pressure_channel.close()
 
-    # tessten of dit werkt zo met phidget ipv self
+    # Calls self.callback_attached when all phidgets are attached
     def __on_attach_handler(self, phidget):
         serial = phidget.getDeviceSerialNumber()
         port = phidget.getChannel()
@@ -132,6 +134,7 @@ class MeasureWindTunnel:
         if all(self.attached):
             self.callback_attached()
     
+    # Calls self.callback_detached when one phidgets is detached
     def __on_detach_handler(self, phidget):
         serial = phidget.getDeviceSerialNumber()
         port = phidget.getChannel()
@@ -147,10 +150,12 @@ class MeasureWindTunnel:
                 self.attached[3] = False
             elif port == 2:
                 self.attached[4] = False
+        # Only call when one is detached, to prevent multiple callbacks
         if sum(self.attached) == 4:
             self.callback_detached()
 
 
+# Mock class for testing
 class MeasureMock:
     def __init__(self, callback_attached=lambda: None, callback_detached=lambda: None):
         self.offset_lift = 0

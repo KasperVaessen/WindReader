@@ -9,6 +9,8 @@ from Measurement import MeasureMock, MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
 from priv.settingswindow import Ui_Settings
 
+
+# A class to create a semi-transparent overlay to show when the phidgets are not connected
 class overlay(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -29,13 +31,14 @@ class overlay(QWidget):
         painter.drawText(event.rect(), Qt.AlignCenter, "Phidgets not connected")
         painter.setPen(QPen(Qt.NoPen))
 
+# A class to create the settings window
 class Settings(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
 
-        
+# A class to create the main window
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -77,6 +80,7 @@ class MainWindow(QMainWindow):
 
         self.init_plots()
         
+    # Calibrates the load cells based on the settings
     def tare_measure(self):
         amount_samples = self.settings.value("amount_samples_calibration", 5)
         sample_rate = self.settings.value("sample_rate_calibration", 5)
@@ -85,6 +89,7 @@ class MainWindow(QMainWindow):
         lift_gain = float(self.settings.value("lift gain", "11148.31"))
         self.meassurement.zero_data(amount_samples, 1/sample_rate, default_calibration, drag_gain, lift_gain)
 
+    # Creates empty plots
     def init_plots(self):
         for plot in [self.ui.plot_1, self.ui.plot_2, self.ui.plot_3, self.ui.plot_4]:
             plot.setBackground('w')
@@ -116,6 +121,7 @@ class MainWindow(QMainWindow):
         self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen(None), symbol ='x')
         self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen(None), symbol ='x')
     
+    # Updates the plots with new data
     def updatePlots(self, values):
         # If data is too long, remove the oldest data point
         if len(self.recent_lift) > 100:
@@ -140,12 +146,12 @@ class MainWindow(QMainWindow):
             self.line3.setData(self.x, self.recent_diff_pressure)
             self.line4.setData(self.x, self.recent_wind_speed)
     
-    
+    # Resizes the overlay to the size of the window
     def resizeEvent(self, event):
         self.overlay.resize(event.size())
         event.accept()
 
-
+    # Starts the measurement
     def start_measure(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_measure)
@@ -161,14 +167,17 @@ class MainWindow(QMainWindow):
         self.recent_lift = []
         self.recent_wind_speed = []
     
+    # Callback function for when the phidgets are connected
     def phidget_attached(self):
         self.overlay.setVisible(False)
         self.ui.label_5.setText("Phidgets connected")
     
+    # Callback function for when the phidgets are disconnected
     def phidget_detached(self):
         self.overlay.setVisible(True)
         self.ui.label_5.setText("Phidgets disconnected")
     
+    # Stops the measurement
     def stop_measure(self):
         self.timer.stop()
         self.ui.stop_measure_button.setEnabled(False)
@@ -176,6 +185,7 @@ class MainWindow(QMainWindow):
         self.ui.start_measure_button.setEnabled(True)
         self.ui.start_measure_button2.setEnabled(True)
     
+    # Updates the measurement values in the fields and plots
     def update_measure(self):
         values = self.meassurement.get_values()
         self.ui.lift_entry.setText(format(values[0], '.3f'))
@@ -187,6 +197,7 @@ class MainWindow(QMainWindow):
 
         self.updatePlots(values)
     
+    # Saves the measurement values to the table
     def save_measurement(self):
         self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 0, QTableWidgetItem(self.ui.lift_entry.text()))
@@ -198,8 +209,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 7, QTableWidgetItem(self.ui.surface_entry.text()))
 
+        # Calulate lifft coeficient and drag coeficient
         if float(self.ui.speed_entry.text()) > 0 and float(self.ui.surface_entry.text()) > 0:
-            #TODO: dit checken, is namelijk door copilot gedaan
             c_algGasConst = 8.31
             c_molMassa = 0.0288
             # Ideal gas law: pV = nRT
@@ -212,7 +223,7 @@ class MainWindow(QMainWindow):
             self.line5.setData(self.cl_data, self.alpha_data)
             self.line6.setData(self.cl_data, self.cd_data)
 
-    
+    # Saves the measurement values to a csv file
     def save_to_csv(self):
         path, ok = QFileDialog.getSaveFileName(
             self, 'Save CSV', os.getenv('HOME'), 'CSV(*.csv)')
@@ -225,6 +236,7 @@ class MainWindow(QMainWindow):
                 for row in range(self.ui.tableWidget.rowCount()):
                     writer.writerow(self.ui.tableWidget.item(row, column).text() for column in columns)
 
+    # Shows the settings window
     def show_settings(self, settings):
         #Set fields to current setting values
         self.settings_window = Settings()
@@ -246,10 +258,12 @@ class MainWindow(QMainWindow):
         self.settings_window.show()
         self.settings_window.ui.save_settings.clicked.connect(lambda : self.save_settings(settings))
 
+    # Enables or disables the gain fields based on the default calibration checkbox
     def change_gain_enabled(self):
         self.settings_window.ui.setting_drag_gain.setEnabled(not self.settings_window.ui.default_calibration.isChecked())
         self.settings_window.ui.setting_lift_gain.setEnabled(not self.settings_window.ui.default_calibration.isChecked())
 
+    # Saves the settings to the settings file
     def save_settings(self, settings):
         settings.setValue("sample_rate_calibration", self.settings_window.ui.sample_rate_calibration.value())
         settings.setValue("amount_samples_calibration", self.settings_window.ui.amount_samples_calibration.value())
