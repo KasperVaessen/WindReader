@@ -1,6 +1,5 @@
 altgraph==0.17.4
 contourpy==1.2.0
-cx-Logging==3.1.0
 cycler==0.12.1
 fonttools==4.47.2
 importlib-metadata==7.0.1
