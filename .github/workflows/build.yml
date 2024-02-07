@@ -59,6 +59,11 @@ jobs:
 
             OUT_FILE_NAME: WindReader.dmg
             ASSET_MIME: application/octet-stream
+          - os: windows-latest
+            TARGET: windows
+            CMD_BUILD: pyinstaller src/main_application.py -n WindReader -w -F -i resources/icon.ico
+            OUT_FILE_NAME: WindReader.exe
+            ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.9
