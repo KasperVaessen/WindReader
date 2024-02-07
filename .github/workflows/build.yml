@@ -42,10 +42,20 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller src/main_application.py -n WindReader -w -i resources/icon.ico &&
-                cd dist/ &&
-                zip -r9 WindReader WindReader.app/                
-            OUT_FILE_NAME: WindReader.zip
-            ASSET_MIME: application/zip
+                mkdir -p dist/dmg
+                cp -r "dist/WindReader.app" dist/dmg
+
+                brew install create-dmg
+                create-dmg \
+                  --volname "WindReader" \
+                  --window-pos 200 120 \
+                  --window-size 600 300 \
+                  --app-drop-link 425 120 \
+                  "dist/WindReader.dmg" \
+                  "dist/dmg/"
+
+            OUT_FILE_NAME: WindReader.dmg
+            ASSET_MIME: application/octet-stream
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.9
