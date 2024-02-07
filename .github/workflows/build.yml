@@ -8,6 +8,7 @@ on:
 jobs:
 
   createrelease:
+    permissions: write-all
     name: Create Release
     runs-on: [ubuntu-latest]
     steps:
@@ -30,6 +31,7 @@ jobs:
         path: release_url.txt
 
   build:
+    permissions: write-all
     name: Build packages
     needs: createrelease
     runs-on: ${{ matrix.os }}
