@@ -91,4 +91,4 @@ This will create an executable in the folder `dist/WindReader`.
 
 ## Create windows installer with Inno Setup
 
-Finally, for windows users, a installer can be created. For this you can use [Inno Setup](https://jrsoftware.org/isinfo.php). The process speaks for itself. Do make sure you include the `dist/WindReader/_internal/` folder when it asks for other application files.
+Finally, for windows users, a installer can be created. For this you can use [Inno Setup](https://jrsoftware.org/isinfo.php). The process speaks for itself. Do make sure you include the `dist/WindReader/` folder when it asks for other application files.
