@@ -46,6 +46,7 @@ jobs:
                 cp -r "dist/WindReader.app" dist/dmg
 
                 brew install create-dmg
+
                 create-dmg \
                   --volname "WindReader" \
                   --window-pos 200 120 \
@@ -53,6 +54,8 @@ jobs:
                   --app-drop-link 425 120 \
                   "dist/WindReader.dmg" \
                   "dist/dmg/"
+                
+                cd dist
 
             OUT_FILE_NAME: WindReader.dmg
             ASSET_MIME: application/octet-stream
