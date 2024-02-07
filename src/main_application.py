@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.settings = QSettings("PWS_Lab", "Wind Tunnel")
-        self.meassurement = MeasureMock(self.phidget_attached, self.phidget_detached)
+        self.meassurement = MeasureWindTunnel(self.phidget_attached, self.phidget_detached)
 
         self.ui.tableWidget.removeRow(0)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
