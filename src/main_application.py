@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
             plot.setBackground(None)
             plot.showGrid(x=True, y=True)
             plot.setStyleSheet("border: 0px")
-            plot.setLabel('bottom', 'CL')
+            plot.setLabel('left', 'CL')
         
         self.ui.plot_1.setTitle("Lift")
         self.ui.plot_2.setTitle("Drag")
@@ -117,16 +117,16 @@ class MainWindow(QMainWindow):
         self.ui.plot_2.setLabel('left', 'Drag (N)')
         self.ui.plot_3.setLabel('left', 'Diff. Pressure (Pa)')
         self.ui.plot_4.setLabel('left', 'Wind Speed (m/s)')
-        self.ui.plot_5.setLabel('left', 'alpha (deg)')
-        self.ui.plot_6.setLabel('left', 'CD')
+        self.ui.plot_5.setLabel('bottom', 'alpha (deg)')
+        self.ui.plot_6.setLabel('bottom', 'CD')
 
         #set pen color to color primary color of style, which is saved as an environment variable.
         self.line1 = self.ui.plot_1.plot(self.recent_lift, pen=pg.mkPen('r', width=1))
         self.line2 = self.ui.plot_2.plot(self.recent_drag, pen=pg.mkPen('r', width=1))
         self.line3 = self.ui.plot_3.plot(self.recent_diff_pressure, pen=pg.mkPen('r', width=1))
         self.line4 = self.ui.plot_4.plot(self.recent_wind_speed, pen=pg.mkPen('r', width=1))
-        self.line5 = self.ui.plot_5.plot(self.cl_data, self.alpha_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
-        self.line6 = self.ui.plot_6.plot(self.cl_data, self.cd_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
+        self.line5 = self.ui.plot_5.plot(self.alpha_data, self.cl_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
+        self.line6 = self.ui.plot_6.plot(self.cd_data,self.cl_data, pen=pg.mkPen(None), symbol ='x', symbolBrush='r')
     
     # Updates the plots with new data
     def updatePlots(self, values):
@@ -227,8 +227,8 @@ class MainWindow(QMainWindow):
             self.cl_data.append(cl)
             self.cd_data.append(cd)
             self.alpha_data.append(float(self.ui.angle_entry.text()))
-            self.line5.setData(self.cl_data, self.alpha_data)
-            self.line6.setData(self.cl_data, self.cd_data)
+            self.line5.setData(self.alpha_data, self.cl_data)
+            self.line6.setData(self.cd_data, self.cl_data)
 
     # Saves the measurement values to a csv file
     def save_to_csv(self):
