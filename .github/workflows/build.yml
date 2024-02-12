@@ -41,7 +41,7 @@ jobs:
           - os: macos-latest
             TARGET: macos
             CMD_BUILD: >
-                pyinstaller src/main_application.py -n WindReader -w -i resources/icon.ico &&
+                pyinstaller src/main_application.py -n WindReader -w -i resources/icon.icns &&
                 mkdir -p dist/dmg &&
                 cp -r "dist/WindReader.app" dist/dmg &&
 
