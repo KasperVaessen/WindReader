@@ -83,8 +83,13 @@ pip install .
 ```
 
 ### Create executable
+#### Windows
 ```bash
 pyinstaller src/main_application.py -n WindReader -w -i resources/icon.ico
+```
+#### MacOS
+```bash
+pyinstaller src/main_application.py -n WindReader -w -i resources/icon.icns
 ```
 
 This will create an executable in the folder `dist/WindReader`.
