@@ -2,10 +2,10 @@ import csv
 import os
 import sys
 import pyqtgraph as pg
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from Measurement import MeasureMock, MeasureWindTunnel
+from PySide6.QtWidgets import QWidget, QMainWindow, QApplication, QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox
+from PySide6.QtCore import QTimer, QSettings, QRegularExpression, Qt
+from PySide6.QtGui import QPalette, QPainter, QBrush, QColor, QPen, QRegularExpressionValidator
+from Measurement import MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
 from priv.settingswindow import Ui_Settings
 from qt_material import apply_stylesheet
