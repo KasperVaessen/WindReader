@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.removeRow(0)
         self.shortcut = QShortcut(QKeySequence("del"), self)
         self.shortcut.activated.connect(self.delete)
+        self.ui.tableWidget.itemChanged.connect(self.update_graph_data)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
         self.ui.start_measure_button2.clicked.connect(self.start_measure)
         self.ui.stop_measure_button.clicked.connect(self.stop_measure)
@@ -235,20 +236,6 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 6, QTableWidgetItem(self.ui.angle_entry.text()))
         self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount()-1, 7, QTableWidgetItem(self.ui.surface_entry.text()))
 
-        # Calulate lifft coeficient and drag coeficient
-        if float(self.ui.speed_entry.text()) > 0 and float(self.ui.surface_entry.text()) > 0:
-            c_algGasConst = 8.31
-            c_molMassa = 0.0288
-            # Ideal gas law: pV = nRT
-            airDensity = c_molMassa * float(self.ui.pressure_entry.text()) * 1000 / (c_algGasConst * float(self.ui.temp_entry.text()))
-            cl = float(self.ui.lift_entry.text())/(0.5*airDensity*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
-            cd = float(self.ui.drag_entry.text())/(0.5*airDensity*float(self.ui.speed_entry.text())**2*float(self.ui.surface_entry.text()))
-            self.cl_data.append(cl)
-            self.cd_data.append(cd)
-            self.alpha_data.append(float(self.ui.angle_entry.text()))
-            self.line5.setData(self.alpha_data, self.cl_data)
-            self.line6.setData(self.cd_data, self.cl_data)
-
     # Saves the measurement values to a csv file
     def save_to_csv(self):
         path, ok = QFileDialog.getSaveFileName(
@@ -306,6 +293,38 @@ class MainWindow(QMainWindow):
             indexes =[QPersistentModelIndex(index) for index in self.ui.tableWidget.selectionModel().selectedRows()]
             for index in indexes:
                 self.ui.tableWidget.removeRow(index.row())
+
+    def update_graph_data(self):
+        cl_data = []
+        cd_data = []
+        alpha_data = []
+        for row in range(self.ui.tableWidget.rowCount()):
+            # Get the values from the table if present
+            try:
+                lift = float(self.ui.tableWidget.item(row, 0).text())
+                drag = float(self.ui.tableWidget.item(row, 1).text())
+                pressure = float(self.ui.tableWidget.item(row, 2).text())
+                temp = float(self.ui.tableWidget.item(row, 3).text())
+                speed = float(self.ui.tableWidget.item(row, 5).text())
+                angle = float(self.ui.tableWidget.item(row, 6).text())
+                surface = float(self.ui.tableWidget.item(row, 7).text())
+            except:
+                continue
+
+            # Calulate lift coeficient and drag coeficient
+            if speed > 0 and surface > 0:
+                c_algGasConst = 8.31
+                c_molMassa = 0.0288
+                # Ideal gas law: pV = nRT
+                airDensity = c_molMassa * pressure * 1000 / (c_algGasConst * temp)
+                cl = lift/(0.5*airDensity*speed**2*surface)
+                cd = drag/(0.5*airDensity*speed**2*surface)
+
+                cl_data.append(cl)
+                cd_data.append(cd)
+                alpha_data.append(angle)
+        self.line5.setData(alpha_data, cl_data)
+        self.line6.setData(cd_data, cl_data)
 
     
 if __name__ == "__main__":
