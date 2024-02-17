@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 # Mock class for testing
-class MeasureMock:
+class MeasureWindTunnel:
     def __init__(self, callback_attached=lambda: None, callback_detached=lambda: None):
         self.offset_lift = 0
         self.offset_drag = 0

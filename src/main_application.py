@@ -3,9 +3,10 @@ import os
 import sys
 import pyqtgraph as pg
 from PySide6.QtWidgets import QWidget, QMainWindow, QApplication, QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox
-from PySide6.QtCore import QTimer, QSettings, QRegularExpression, Qt
-from PySide6.QtGui import QPalette, QPainter, QBrush, QColor, QPen, QRegularExpressionValidator
-from Measurement import MeasureWindTunnel
+from PySide6.QtCore import QTimer, QSettings, QRegularExpression, Qt, QPersistentModelIndex
+from PySide6.QtGui import QPalette, QPainter, QBrush, QColor, QPen, QRegularExpressionValidator, QShortcut, QKeySequence
+# from Measurement import MeasureWindTunnel
+from mock_measurement import MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
 from priv.settingswindow import Ui_Settings
 from qt_material import apply_stylesheet
@@ -70,6 +71,8 @@ class MainWindow(QMainWindow):
 
         # Connect the buttons to the functions
         self.ui.tableWidget.removeRow(0)
+        self.shortcut = QShortcut(QKeySequence("del"), self)
+        self.shortcut.activated.connect(self.delete)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
         self.ui.start_measure_button2.clicked.connect(self.start_measure)
         self.ui.stop_measure_button.clicked.connect(self.stop_measure)
@@ -296,6 +299,13 @@ class MainWindow(QMainWindow):
         settings.setValue("sample_rate_measure", self.settings_window.ui.sample_rate_measure.value())
 
         self.settings_window.close()
+
+    # Deletes the selected row from the table
+    def delete(self):
+        if self.ui.tableWidget.selectionModel().hasSelection():
+            indexes =[QPersistentModelIndex(index) for index in self.ui.tableWidget.selectionModel().selectedRows()]
+            for index in indexes:
+                self.ui.tableWidget.removeRow(index.row())
 
     
 if __name__ == "__main__":
