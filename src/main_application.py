@@ -5,8 +5,8 @@ import pyqtgraph as pg
 from PySide6.QtWidgets import QWidget, QMainWindow, QApplication, QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox
 from PySide6.QtCore import QTimer, QSettings, QRegularExpression, Qt, QPersistentModelIndex
 from PySide6.QtGui import QPalette, QPainter, QBrush, QColor, QPen, QRegularExpressionValidator, QShortcut, QKeySequence
-# from Measurement import MeasureWindTunnel
-from mock_measurement import MeasureWindTunnel
+from Measurement import MeasureWindTunnel
+# from mock_measurement import MeasureWindTunnel
 from priv.mainwindow import Ui_MainWindow
 from priv.settingswindow import Ui_Settings
 from qt_material import apply_stylesheet
