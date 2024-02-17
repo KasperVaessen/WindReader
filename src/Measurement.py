@@ -61,6 +61,10 @@ class MeasureWindTunnel:
 
     # Zero data by taking the average of the first timesteps, and set the gain
     def zero_data(self, timesteps=5, interval=0.2, use_default=True, gain_lift=1000, gain_drag=1000):
+        self.offset_lift = 0
+        self.offset_drag = 0
+        self.offset_diff_pressure = 0
+        
         for _ in range(timesteps):
             self.offset_lift += self.lift_channel.getVoltageRatio()
             self.offset_drag += self.drag_channel.getVoltageRatio()
