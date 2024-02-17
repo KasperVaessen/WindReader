@@ -42,9 +42,25 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller src/main_application.py -n WindReader -w -i resources/icon.icns &&
+                mkdir -p dist/dmg &&
+                cp -r "dist/WindReader.app" dist/dmg &&
+
+                brew install create-dmg
+
+                create-dmg \
+                  --volname "WindReader" \
+                  --window-pos 200 120 \
+                  --window-size 600 300 \
+                  --icon-size 100 \
+                  --icon "WindReader.app" 175 120 \
+                  --hide-extension "WindReader.app" \
+                  --app-drop-link 425 120 \
+                  "dist/WindReader.dmg" \
+                  "dist/dmg/"
+                
                 cd dist
 
-            OUT_FILE_NAME: WindReader.app
+            OUT_FILE_NAME: WindReader.dmg
             ASSET_MIME: application/octet-stream
           - os: windows-latest
             TARGET: windows
