@@ -45,6 +45,7 @@ jobs:
                 cd dist
 
             OUT_FILE_NAME: WindReader.app
+            ASSET_MIME: application/octet-stream
           - os: windows-latest
             TARGET: windows
             CMD_BUILD: pyinstaller src/main_application.py -n WindReader -w -F -i resources/icon.ico
