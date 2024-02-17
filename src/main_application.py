@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Initialize the overlay that shows when the phidgets are not connected
         self.overlay = overlay(self)
         self.overlay.showMaximized()
         self.overlay.setVisible(True)
@@ -53,9 +54,21 @@ class MainWindow(QMainWindow):
         # Set the table to resize the columns to the content
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
+        # Set the settings file
         self.settings = QSettings("PWS_Lab", "Wind Tunnel")
-        self.meassurement = MeasureWindTunnel(self.phidget_attached, self.phidget_detached)
 
+        # Try to create the measurement object, if the phidget library is not installed, show an error message and exit the program
+        try:
+            self.meassurement = MeasureWindTunnel(self.phidget_attached, self.phidget_detached)
+        except:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Phidget library not found")
+            msg.setText("The Phidget library is not installed.\n\n Please install from https://www.phidgets.com/.")
+            msg.exec()
+            sys.exit("Phidget library not found")
+
+        # Connect the buttons to the functions
         self.ui.tableWidget.removeRow(0)
         self.ui.start_measure_button.clicked.connect(self.start_measure)
         self.ui.start_measure_button2.clicked.connect(self.start_measure)
@@ -65,6 +78,7 @@ class MainWindow(QMainWindow):
         self.ui.save_measurement.clicked.connect(self.save_measurement)
         self.ui.save_csv_button.clicked.connect(self.save_to_csv)
 
+        # Initialize the variables for the plots
         self.recent_lift = []
         self.recent_drag = []
         self.recent_diff_pressure = []
@@ -73,12 +87,14 @@ class MainWindow(QMainWindow):
         self.cd_data = []
         self.alpha_data = []
 
+        # Validate input
         reg_ex = QRegularExpression("[+-]?([0-9]*[.])?[0-9]+")
         angle_validator = QRegularExpressionValidator(reg_ex, self.ui.angle_entry)
         area_validator = QRegularExpressionValidator(reg_ex, self.ui.surface_entry)
         self.ui.angle_entry.setValidator(angle_validator)
         self.ui.surface_entry.setValidator(area_validator)
 
+        # Connect the menu buttons to the functions
         self.ui.actionSave.triggered.connect(self.save_to_csv)
         self.ui.actionSettings.triggered.connect(lambda : self.show_settings(self.settings))
 
