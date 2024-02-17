@@ -6,6 +6,7 @@ numpy==1.26.4
 packaging==23.2
 pefile==2023.2.7
 Phidget22==1.18.20240123
+pillow==10.2.0
 pyinstaller==6.4.0
 pyinstaller-hooks-contrib==2024.1
 pyqtgraph==0.13.3
